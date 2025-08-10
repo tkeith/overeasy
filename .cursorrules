@@ -155,8 +155,7 @@ function Component() {
 ### General
 
 - Break up large pages into smaller components in separate files
-- Use Tailwind CSS without custom styles wherever possible
-- Custom styles only as last resort
+- Use Tailwind CSS without custom styles wherever possible (but when we're trying to use code snippets that are heavy on custom/inline styles, feel free to use them)
 - Focus on good design using your own judgment
 - Take two passes: functionality first, then design improvements
 
