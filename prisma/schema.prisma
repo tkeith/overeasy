@@ -11,11 +11,54 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  googleId      String   @unique
-  email         String   @unique
+  id            String    @id @default(cuid())
+  googleId      String    @unique
+  email         String    @unique
   name          String?
   picture       String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  projects      Project[]
+}
+
+model Project {
+  id            String     @id @default(cuid())
+  name          String
+  description   String?
+  userId        String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learnings     Learning[]
+
+  @@index([userId])
+}
+
+model Learning {
+  id            String     @id @default(cuid())
+  projectId     String
+  url           String
+  summary       String?    @db.Text
+  content       String?    @db.Text // Content from Firecrawl
+  processedAt   DateTime?  // When AI processing completed
+  status        LearningStatus @default(PENDING)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+enum LearningStatus {
+  PENDING     // Just created, not processed yet
+  PROCESSING  // Currently being processed
+  COMPLETED   // Successfully processed
+  FAILED      // Processing failed
 }
