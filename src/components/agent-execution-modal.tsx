@@ -128,9 +128,9 @@ export function AgentExecutionModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="relative flex h-[80vh] w-[90vw] max-h-[800px] min-h-[400px] max-w-5xl min-w-[320px] flex-col overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
                 {/* Header */}
-                <div className="border-b border-gray-200 px-6 py-4">
+                <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <Dialog.Title
@@ -166,7 +166,7 @@ export function AgentExecutionModal({
                 </div>
 
                 {/* Content */}
-                <div ref={scrollContainerRef} className="max-h-[60vh] overflow-y-auto">
+                <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
                   {isLoading ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
@@ -182,7 +182,7 @@ export function AgentExecutionModal({
 
                 {/* Footer */}
                 {execution && (
-                  <div className="border-t border-gray-200 px-6 py-3">
+                  <div className="flex-shrink-0 border-t border-gray-200 px-6 py-3">
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <div>
                         Started:{" "}

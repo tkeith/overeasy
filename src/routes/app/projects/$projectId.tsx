@@ -93,7 +93,7 @@ function ProjectLayout() {
         {/* Navigation Tabs */}
         <div className="mt-4 flex space-x-6">
           <Link
-            to="/app/projects/$projectId"
+            to="/app/projects/$projectId/test-runs"
             params={{ projectId }}
             className="inline-flex items-center border-b-2 px-1 pb-2 text-sm font-medium transition-colors"
             activeProps={{
@@ -103,7 +103,6 @@ function ProjectLayout() {
               className:
                 "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300",
             }}
-            activeOptions={{ exact: true }}
           >
             <TestTube className="mr-2 h-4 w-4" />
             Test Runs

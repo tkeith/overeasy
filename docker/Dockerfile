@@ -11,3 +11,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN npm install -g pnpm
 RUN pnpm set store-dir /app/node_modules/.pnpm-store
+ENV SHELL=/bin/bash
+RUN bash -c "pnpm setup && \
+    source /root/.bashrc && \
+    pnpm install -g playwright@^1.54.2 && \
+    playwright install --with-deps"
+ENV SHELL=/bin/sh

@@ -16,11 +16,13 @@ model User {
   email         String    @unique
   name          String?
   picture       String?
+  vmId          String?    // Optional VM ID, populated when needed
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Relations
   projects      Project[]
+  testRuns      TestRun[]
 }
 
 model Project {
@@ -34,6 +36,7 @@ model Project {
   // Relations
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   learnings     Learning[]
+  testRuns      TestRun[]
 
   @@index([userId])
 }
@@ -61,7 +64,7 @@ model Learning {
 
 model AgentExecution {
   id            String     @id @default(cuid())
-  agentName     String     // Name of the agent (e.g., "learning-extractor")
+  agentName     String     // Name of the agent (e.g., "learning-extractor", "testing-agent")
   status        AgentExecutionStatus @default(RUNNING)
   metadata      Json?      // Optional metadata about the execution
   startedAt     DateTime   @default(now())
@@ -72,6 +75,7 @@ model AgentExecution {
   // Relations
   blocks        AgentBlock[]
   learnings     Learning[]  // Reverse relation from Learning
+  testRuns      TestRun[]   // Reverse relation from TestRun
 
   @@index([status])
   @@index([agentName])
@@ -110,4 +114,60 @@ enum AgentBlockType {
   REASONING
   TOOL_CALL
   TOOL_RESULT
+}
+
+model TestRun {
+  id                String     @id @default(cuid())
+  projectId         String
+  userId            String
+  status            TestRunStatus @default(PENDING)
+  agentExecutionId  String?    // Optional reference to agent execution
+  metadata          Json?      // Optional metadata about the test run
+  startedAt         DateTime?  // When the test run started
+  completedAt       DateTime?  // When the test run completed
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  project           Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentExecution    AgentExecution? @relation(fields: [agentExecutionId], references: [id], onDelete: SetNull)
+  vulnerabilities   Vulnerability[]
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([agentExecutionId])
+}
+
+model Vulnerability {
+  id            String     @id @default(cuid())
+  testRunId     String
+  name          String
+  details       String     @db.Text
+  severity      VulnerabilitySeverity @default(MEDIUM)
+  category      String?    // Optional category (e.g., "XSS", "SQL Injection", etc.)
+  evidence      Json?      // Optional evidence/proof of vulnerability
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  testRun       TestRun    @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+
+  @@index([testRunId])
+  @@index([severity])
+}
+
+enum TestRunStatus {
+  PENDING     // Just created, not started yet
+  RUNNING     // Currently being executed
+  COMPLETED   // Successfully completed
+  FAILED      // Execution failed
+}
+
+enum VulnerabilitySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
