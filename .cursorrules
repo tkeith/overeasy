@@ -38,6 +38,11 @@
   - Use `some-page.index.tsx` or `some-page/index.tsx`, NOT `some-page.tsx`
 - Put non-route components in `src/components/`
 
+### Schemas
+
+- All Zod schemas go in `src/schemas/`
+- Use schemas to validate and parse all external data (API responses, form inputs, etc.)
+
 ## Authentication Pattern
 
 - JWT-based authentication (stateless, no sessions table needed)
@@ -160,6 +165,11 @@ function Component() {
 - Use proper TypeScript types everywhere
 - Follow ESLint rules strictly
 - Handle all promises (await, .then/.catch, or void operator)
+- NEVER use `any` - use `unknown` instead
+- AVOID type assertions (`as`) unless absolutely necessary
+- AVOID `@ts-ignore`, `@ts-expect-error`, or ESLint disable comments
+- When converting from `unknown` to known types, use Zod schemas for validation
+- Performance overhead from Zod parsing is acceptable - prioritize type safety
 
 ## Environment Variables
 
