@@ -3,7 +3,6 @@ import { useAuthStore } from "~/stores/auth-store";
 import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Header } from "~/components/header";
 
 export const Route = createFileRoute("/app/")({
   component: AppDashboard,
@@ -40,20 +39,13 @@ function AppDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
-      {/* Main Content Area - Currently blank */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-lg bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Welcome to Your App
-          </h2>
-          <p className="mt-2 text-gray-600">
-            This is a blank dashboard. Start building your application here.
-          </p>
-        </div>
-      </main>
+    <div className="rounded-lg bg-white p-8 shadow-sm">
+      <h2 className="text-2xl font-semibold text-gray-900">
+        Welcome to Your App
+      </h2>
+      <p className="mt-2 text-gray-600">
+        This is a blank dashboard. Start building your application here.
+      </p>
     </div>
   );
 }
