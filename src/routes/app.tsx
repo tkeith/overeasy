@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Outlet,
-  useNavigate,
-  useLocation,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useIsAuthenticated } from "~/stores/auth-store";
 import { Header } from "~/components/header";
 import { useEffect } from "react";
@@ -14,11 +9,7 @@ export const Route = createFileRoute("/app")({
 
 function AppLayout() {
   const navigate = useNavigate();
-  const location = useLocation();
   const isAuthenticated = useIsAuthenticated();
-
-  // Check if we're on a project detail page
-  const isProjectPage = location.pathname.includes("/app/project/");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -30,16 +21,11 @@ function AppLayout() {
     return null; // or a loading spinner
   }
 
-  // For project pages, render without header and container
-  if (isProjectPage) {
-    return <Outlet />;
-  }
-
-  // For other app pages, use the standard layout
+  // Simplified app layout without sidebar
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6">
         <Outlet />
       </main>
     </div>

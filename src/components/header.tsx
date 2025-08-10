@@ -28,7 +28,7 @@ export function Header() {
   };
 
   return (
-    <header className="border-b border-gray-200 bg-white shadow-sm">
+    <header className="border-b border-amber-100 bg-white/95 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
@@ -42,17 +42,17 @@ export function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-gray-50"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-amber-50"
                 >
                   {user.picture ? (
                     <img
                       src={user.picture}
                       alt={user.name || "Profile"}
-                      className="h-8 w-8 rounded-full"
+                      className="h-8 w-8 rounded-full border border-amber-200"
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
-                      <User className="h-5 w-5 text-gray-600" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100">
+                      <User className="h-5 w-5 text-amber-700" />
                     </div>
                   )}
                   <div className="hidden text-left sm:block">
@@ -69,8 +69,8 @@ export function Header() {
                       className="fixed inset-0 z-10"
                       onClick={() => setIsMenuOpen(false)}
                     ></div>
-                    <div className="absolute right-0 top-12 z-20 w-64 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
-                      <div className="border-b border-gray-100 px-4 py-3">
+                    <div className="absolute right-0 top-12 z-20 w-64 rounded-lg border border-amber-100 bg-white py-2 shadow-lg">
+                      <div className="border-b border-amber-100 px-4 py-3">
                         <p className="text-sm font-medium text-gray-900">
                           {user.name || "User"}
                         </p>
@@ -79,7 +79,7 @@ export function Header() {
                         </p>
                       </div>
 
-                      <div className="border-b border-gray-100 px-4 py-3">
+                      <div className="border-b border-amber-100 px-4 py-3">
                         <p className="mb-1 text-xs uppercase tracking-wider text-gray-500">
                           Account ID
                         </p>
@@ -90,9 +90,9 @@ export function Header() {
 
                       <button
                         onClick={handleLogout}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-gray-50"
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-amber-50"
                       >
-                        <LogOut className="h-4 w-4 text-gray-600" />
+                        <LogOut className="h-4 w-4 text-amber-600" />
                         <span className="text-sm text-gray-700">Sign out</span>
                       </button>
                     </div>
