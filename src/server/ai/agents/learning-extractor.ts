@@ -29,7 +29,7 @@ export async function extractLearningsFromUrl(
     const systemPrompt = await readFile(promptPath, "utf-8");
 
     // Generate AI response with Firecrawl tools
-    const { text, steps } = await generateText({
+    const { text } = await generateText({
       model: anthropic("claude-sonnet-4-20250514"),
       tools,
       maxSteps: 20, // Allow up to 20 tool calls
@@ -50,41 +50,39 @@ export async function extractLearningsFromUrl(
           role: "user",
           content: `Extract learnings from this URL: ${url}
 
-          Use the firecrawl_scrape tool to get the content, then analyze it and provide a summary.`,
+          Use the firecrawl_scrape tool to get the content, then process it and provide both the cleaned content and a summary following the XML format specified in your instructions.`,
         },
       ],
     });
 
-    // Get raw content from Firecrawl tool results
+    // Parse content and summary from XML tags in the response
     let content: string | null = null;
-    for (const step of steps) {
-      if (step.toolResults && step.toolResults.length > 0) {
-        for (const result of step.toolResults) {
-          // Look for Firecrawl scrape results
-          if (result.toolName === "firecrawl_scrape" && result.result) {
-            // Extract markdown content if available
-            const firecrawlResult = result.result as unknown as Record<
-              string,
-              unknown
-            >;
-            if (typeof firecrawlResult.markdown === "string") {
-              content = firecrawlResult.markdown;
-            } else if (typeof firecrawlResult.text === "string") {
-              content = firecrawlResult.text;
-            } else {
-              content = JSON.stringify(result.result);
-            }
-            break;
-          }
-        }
-      }
+    let summary: string | null = null;
+
+    // Extract content between <content> tags
+    const contentMatch = text.match(/<content>\s*([\s\S]*?)\s*<\/content>/);
+    if (contentMatch && contentMatch[1]) {
+      content = contentMatch[1].trim();
+    }
+
+    // Extract summary between <summary> tags
+    const summaryMatch = text.match(/<summary>\s*([\s\S]*?)\s*<\/summary>/);
+    if (summaryMatch && summaryMatch[1]) {
+      summary = summaryMatch[1].trim();
+    }
+
+    // Validate that we got both content and summary
+    if (!content || !summary) {
+      throw new Error(
+        "Failed to extract content and summary from AI response. Response may not be in the expected XML format.",
+      );
     }
 
     // Update the learning with extracted data
     await db.learning.update({
       where: { id: learningId },
       data: {
-        summary: text,
+        summary,
         content,
         status: "COMPLETED",
         processedAt: new Date(),
