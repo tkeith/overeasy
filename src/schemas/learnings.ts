@@ -25,7 +25,7 @@ export const learningWithProjectSchema = learningSchema.extend({
   project: z.object({
     id: z.string(),
     name: z.string(),
-    description: z.string().nullable(),
+    url: z.string(),
     userId: z.string(),
     createdAt: z.date(),
     updatedAt: z.date(),

@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { TRPCReactProvider } from "~/trpc/react";
 import { GoogleAuthProvider } from "~/components/google-auth-provider";
+import { Toaster } from "react-hot-toast";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -21,6 +22,26 @@ function RootComponent() {
     <TRPCReactProvider>
       <GoogleAuthProvider>
         <Outlet />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#333",
+              color: "#fff",
+            },
+            success: {
+              style: {
+                background: "#10b981",
+              },
+            },
+            error: {
+              style: {
+                background: "#ef4444",
+              },
+            },
+          }}
+        />
       </GoogleAuthProvider>
     </TRPCReactProvider>
   );

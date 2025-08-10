@@ -8,11 +8,11 @@ export const createProject = baseProcedure
     z.object({
       token: z.string(),
       name: z.string().min(1).max(255),
-      description: z.string().optional(),
+      url: z.string().url(),
     }),
   )
   .mutation(async ({ input }) => {
-    const { token, name, description } = input;
+    const { token, name, url } = input;
 
     // Verify the token and get user
     const user = await verifyToken(token);
@@ -24,7 +24,7 @@ export const createProject = baseProcedure
     const project = await db.project.create({
       data: {
         name,
-        description,
+        url,
         userId: user.id,
       },
     });

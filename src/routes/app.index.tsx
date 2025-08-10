@@ -1,119 +1,180 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import {
-  sampleProjects,
-  simulateCreateProject,
-  simulateDeleteProject,
-} from "~/data/placeholder-data";
-import { Plus, Trash2, ArrowRight } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { Plus, ArrowRight, Folder } from "lucide-react";
+import { useTRPC } from "~/trpc/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "~/stores/auth-store";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/app/")({
   component: ProjectsOverview,
 });
 
 function ProjectsOverview() {
-  const [projects, setProjects] = useState(sampleProjects);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectUrl, setNewProjectUrl] = useState("");
 
-  const [isCreating, setIsCreating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const token = useAuthStore((state) => state.token);
+  const navigate = useNavigate();
 
-  const handleCreateProject = async () => {
-    if (!newProjectName || !newProjectUrl) return;
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!token) {
+      void navigate({ to: "/login" });
+    }
+  }, [token, navigate]);
 
-    setIsCreating(true);
-    const newProject = await simulateCreateProject({
+  // Fetch projects
+  const {
+    data: projects = [],
+    isLoading,
+    error,
+  } = useQuery(
+    trpc.projects.list.queryOptions(
+      { token: token || "" },
+      { enabled: !!token },
+    ),
+  );
+
+  // Create project mutation
+  const createProjectMutation = useMutation(
+    trpc.projects.create.mutationOptions({
+      onSuccess: (data) => {
+        void queryClient.invalidateQueries({ queryKey: ["projects"] });
+        setShowCreateModal(false);
+        setNewProjectName("");
+        setNewProjectUrl("");
+        // Navigate to the newly created project
+        void navigate({
+          to: "/app/projects/$projectId",
+          params: { projectId: data.id },
+        });
+      },
+      onError: (error) => {
+        console.error("Failed to create project:", error);
+        toast.error("Failed to create project. Please try again.");
+      },
+    }),
+  );
+
+  const handleCreateProject = () => {
+    if (!newProjectName || !newProjectUrl || !token) return;
+
+    createProjectMutation.mutate({
+      token,
       name: newProjectName,
       url: newProjectUrl,
     });
-    setProjects([...projects, newProject]);
-    setNewProjectName("");
-    setNewProjectUrl("");
-
-    setShowCreateModal(false);
-    setIsCreating(false);
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    setIsDeleting(projectId);
-    await simulateDeleteProject(projectId);
-    setProjects(projects.filter((p) => p.id !== projectId));
-    setIsDeleting(null);
-  };
+  if (!token) {
+    return null;
+  }
 
   return (
-    <div className="mx-auto max-w-7xl">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-        <p className="mt-2 text-gray-600">
-          Manage your security testing projects
-        </p>
-      </div>
-
-      {/* Create Project Button */}
-      <div className="mb-6">
+    <div className="p-6">
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+          <p className="mt-2 text-gray-600">
+            Manage your security testing projects and learnings
+          </p>
+        </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center rounded-md border border-transparent bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors"
+          className="inline-flex items-center rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-600"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 h-5 w-5" />
           New Project
         </button>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="rounded-lg bg-white shadow transition-all hover:shadow-lg hover:shadow-amber-100/50 border border-amber-100/20"
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">
+          Failed to load projects. Please try again.
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && projects.length === 0 && (
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
+          <Folder className="mb-4 h-12 w-12 text-gray-400" />
+          <h3 className="text-lg font-medium text-gray-900">No projects yet</h3>
+          <p className="mt-2 text-sm text-gray-500">
+            Get started by creating your first project
+          </p>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="mt-4 inline-flex items-center rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
           >
-            <div className="p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {project.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">{project.url}</p>
+            <Plus className="mr-2 h-5 w-5" />
+            Create Project
+          </button>
+        </div>
+      )}
+
+      {/* Projects Grid */}
+      {!isLoading && projects.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="rounded-lg border border-amber-100/20 bg-white shadow transition-all hover:shadow-lg hover:shadow-amber-100/50"
+            >
+              <div className="p-6">
+                <div className="mb-4 flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {project.name}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-sm text-gray-500">
+                      {project.url}
+                    </p>
+                    <p className="mt-2 text-xs text-gray-400">
+                      {project._count?.learnings || 0} learnings
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    to="/app/projects/$projectId"
+                    params={{ projectId: project.id }}
+                    className="inline-flex items-center text-sm font-medium text-amber-600 transition-colors hover:text-amber-700"
+                  >
+                    View Project
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
                 </div>
               </div>
-
-              <div className="flex items-center justify-between">
-                <Link
-                  to="/app/projects/$projectId"
-                  params={{ projectId: project.id }}
-                  className="inline-flex items-center text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
-                >
-                  View Project
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-                <button
-                  onClick={() => {
-                    void handleDeleteProject(project.id);
-                  }}
-                  disabled={isDeleting === project.id}
-                  className="text-red-500 hover:text-red-600 disabled:opacity-50 transition-colors"
-                >
-                  {isDeleting === project.id ? (
-                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Create Project Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6">
-            <h2 className="mb-4 text-lg font-medium text-gray-900">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">
               Create New Project
             </h2>
             <div className="space-y-4">
@@ -125,38 +186,48 @@ function ProjectsOverview() {
                   type="text"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   placeholder="My Web App"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Target URL
+                  App URL
                 </label>
                 <input
                   type="url"
                   value={newProjectUrl}
                   onChange={(e) => setNewProjectUrl(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   placeholder="https://example.com"
                 />
               </div>
             </div>
-            <div className="mt-6 flex justify-end space-x-3">
+            <div className="mt-6 flex space-x-3">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                disabled={createProjectMutation.isPending}
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  void handleCreateProject();
-                }}
-                disabled={!newProjectName || !newProjectUrl || isCreating}
-                className="rounded-md border border-transparent bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50 transition-colors"
+                onClick={handleCreateProject}
+                disabled={
+                  !newProjectName ||
+                  !newProjectUrl ||
+                  createProjectMutation.isPending
+                }
+                className="flex-1 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
               >
-                {isCreating ? "Creating..." : "Create Project"}
+                {createProjectMutation.isPending ? (
+                  <span className="inline-flex items-center">
+                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Creating...
+                  </span>
+                ) : (
+                  "Create"
+                )}
               </button>
             </div>
           </div>

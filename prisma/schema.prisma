@@ -26,7 +26,7 @@ model User {
 model Project {
   id            String     @id @default(cuid())
   name          String
-  description   String?
+  url           String     // The app URL to be tested
   userId        String
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
