@@ -6,7 +6,9 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import Markdown from "markdown-to-jsx";
 import type { AgentBlock, AgentBlockType } from "~/schemas/agent-execution";
+import { FEATURES } from "~/constants";
 
 interface AgentExecutionViewerProps {
   blocks: AgentBlock[];
@@ -50,35 +52,59 @@ export function AgentExecutionViewer({ blocks }: AgentExecutionViewerProps) {
       case "TEXT": {
         // Text blocks have a 'text' field and optional 'isError' field
         const textContent = content as { text?: unknown; isError?: boolean };
-        return (
-          <div
-            className={textContent.isError ? "text-red-600" : "text-gray-700"}
-          >
-            <p className="whitespace-pre-wrap">
-              {typeof textContent.text === "string"
-                ? textContent.text
-                : textContent.text
-                  ? JSON.stringify(textContent.text)
-                  : ""}
-            </p>
-          </div>
-        );
+        const textValue =
+          typeof textContent.text === "string"
+            ? textContent.text
+            : textContent.text
+              ? JSON.stringify(textContent.text)
+              : "";
+
+        if (FEATURES.ENABLE_MARKDOWN_RENDERING) {
+          return (
+            <div
+              className={
+                textContent.isError
+                  ? "prose prose-sm max-w-none text-red-600"
+                  : "prose prose-sm max-w-none"
+              }
+            >
+              <Markdown>{textValue}</Markdown>
+            </div>
+          );
+        } else {
+          return (
+            <div
+              className={textContent.isError ? "text-red-600" : "text-gray-700"}
+            >
+              <p className="whitespace-pre-wrap">{textValue}</p>
+            </div>
+          );
+        }
       }
 
       case "REASONING": {
         // Reasoning blocks have a 'reasoning' field
         const reasoningContent = content as { reasoning?: unknown };
-        return (
-          <div className="italic text-purple-700">
-            <p className="whitespace-pre-wrap">
-              {typeof reasoningContent.reasoning === "string"
-                ? reasoningContent.reasoning
-                : reasoningContent.reasoning
-                  ? JSON.stringify(reasoningContent.reasoning)
-                  : ""}
-            </p>
-          </div>
-        );
+        const reasoningValue =
+          typeof reasoningContent.reasoning === "string"
+            ? reasoningContent.reasoning
+            : reasoningContent.reasoning
+              ? JSON.stringify(reasoningContent.reasoning)
+              : "";
+
+        if (FEATURES.ENABLE_MARKDOWN_RENDERING) {
+          return (
+            <div className="prose prose-sm max-w-none italic text-purple-700">
+              <Markdown>{reasoningValue}</Markdown>
+            </div>
+          );
+        } else {
+          return (
+            <div className="italic text-purple-700">
+              <p className="whitespace-pre-wrap">{reasoningValue}</p>
+            </div>
+          );
+        }
       }
 
       case "TOOL_CALL": {

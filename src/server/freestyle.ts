@@ -148,7 +148,7 @@ export async function readFileFromVm(
 export async function listFilesInVm(
   vmId: string,
   dirpath: string,
-): Promise<Array<{ name: string; isDirectory: boolean; size?: number }>> {
+): Promise<Array<{ name: string }>> {
   // Ensure dirpath doesn't start with / for the URL
   const cleanPath = dirpath.startsWith("/") ? dirpath.slice(1) : dirpath;
 
@@ -175,9 +175,6 @@ export async function listFilesInVm(
   interface FileInfo {
     name?: string;
     path?: string;
-    type?: string;
-    isDirectory?: boolean;
-    size?: number;
   }
 
   const data = (await response.json()) as { files: Array<FileInfo> };
@@ -185,8 +182,6 @@ export async function listFilesInVm(
   // Transform the response to a simpler format
   return data.files.map((file) => ({
     name: file.name || file.path || "",
-    isDirectory: file.type === "directory" || file.isDirectory || false,
-    size: file.size,
   }));
 }
 

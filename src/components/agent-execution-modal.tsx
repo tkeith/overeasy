@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { X, RefreshCw, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +20,8 @@ export function AgentExecutionModal({
 }: AgentExecutionModalProps) {
   const trpc = useTRPC();
   const token = useAuthStore((state) => state.token);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const prevBlockCountRef = useRef<number>(0);
 
   // Fetch execution data with polling
   const { data: execution, isLoading } = useQuery(
@@ -38,6 +40,28 @@ export function AgentExecutionModal({
       },
     ),
   );
+
+  // Auto-scroll when blocks change (new messages) or on initial load
+  useEffect(() => {
+    if (!execution?.blocks) return;
+
+    const currentBlockCount = execution.blocks.length;
+    const prevBlockCount = prevBlockCountRef.current;
+
+    // Scroll if this is the first load (prev was 0) or if block count increased
+    if (prevBlockCount === 0 || currentBlockCount > prevBlockCount) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        scrollContainerRef.current?.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: prevBlockCount === 0 ? "instant" : "smooth",
+        });
+      }, 50);
+    }
+
+    // Update the previous count for next comparison
+    prevBlockCountRef.current = currentBlockCount;
+  }, [execution?.blocks]);
 
   const getStatusIcon = (status: AgentExecutionStatus) => {
     switch (status) {
@@ -142,7 +166,7 @@ export function AgentExecutionModal({
                 </div>
 
                 {/* Content */}
-                <div className="max-h-[60vh] overflow-y-auto">
+                <div ref={scrollContainerRef} className="max-h-[60vh] overflow-y-auto">
                   {isLoading ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
