@@ -10,6 +10,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   FREESTYLE_API_URL: z.string().default("https://api.freestyle.sh"),
+  FIRECRAWL_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);
