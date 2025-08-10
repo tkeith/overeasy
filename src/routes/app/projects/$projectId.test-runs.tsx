@@ -12,7 +12,7 @@ import {
   XCircleIcon,
   AlertTriangleIcon,
   RefreshCwIcon,
-  ExternalLinkIcon,
+  Activity,
 } from "lucide-react";
 import { AgentExecutionModal } from "~/components/agent-execution-modal";
 import type { TestRunStatus, VulnerabilitySeverity } from "@prisma/client";
@@ -254,9 +254,10 @@ function TestRunsPage() {
                             e.stopPropagation();
                             setSelectedExecutionId(testRun.agentExecutionId);
                           }}
-                          className="p-1 text-gray-400 hover:text-gray-600"
+                          className="inline-flex items-center rounded-md p-1.5 text-amber-500 transition-colors hover:bg-amber-50 hover:text-amber-600"
+                          title="View Agent Activity"
                         >
-                          <ExternalLinkIcon className="h-4 w-4" />
+                          <Activity className="h-4 w-4" />
                         </button>
                       )}
                     </div>

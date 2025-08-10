@@ -1,5 +1,5 @@
 import { generateText } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { anthropic, type AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import { experimental_createMCPClient } from "ai";
 import { z } from "zod";
 import { readFileSync } from "fs";
@@ -9,6 +9,7 @@ import { env } from "~/server/env";
 import { ExecutionTracker } from "~/server/ai/utils/execution-tracker";
 import { createVmTools } from "~/server/utils/vm-agent-tools";
 import { getOrCreateUserVm } from "~/server/utils/vm-manager";
+import { TESTING_AGENT_CONFIG } from "~/server/ai/constants";
 import type { VulnerabilitySeverity } from "@prisma/client";
 
 interface TestingAgentOptions {
@@ -137,7 +138,7 @@ export class TestingAgent {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       playwrightClient = await experimental_createMCPClient(mcpConfig as any);
-      
+
       const playwrightTools = await playwrightClient.tools();
       console.log(
         `[TestingAgent] Playwright tools available:`,
@@ -186,7 +187,7 @@ Start by navigating to the target URL and exploring the application structure, t
       // Execute the AI agent with tools
       console.log(`[TestingAgent] Starting AI generation...`);
       const result = await generateText({
-        model: anthropic("claude-3-5-sonnet-20241022"),
+        model: anthropic(TESTING_AGENT_CONFIG.model),
         system: systemPrompt,
         messages: [
           {
@@ -195,11 +196,36 @@ Start by navigating to the target URL and exploring the application structure, t
           },
         ],
         tools: allTools,
-        maxSteps: 50, // Allow multiple tool calls for thorough testing
-        temperature: 0.2, // Lower temperature for more consistent testing
+        maxSteps: TESTING_AGENT_CONFIG.maxSteps,
+        temperature: TESTING_AGENT_CONFIG.temperature,
+        providerOptions: {
+          anthropic: {
+            thinking: {
+              type: TESTING_AGENT_CONFIG.thinking.enabled
+                ? "enabled"
+                : "disabled",
+              budgetTokens: TESTING_AGENT_CONFIG.thinking.budgetTokens,
+            },
+          } satisfies AnthropicProviderOptions,
+        },
+        headers: {
+          "anthropic-beta": "interleaved-thinking-2025-05-14",
+        },
         onStepFinish: async (step) => {
           // Track each step
           console.log(`[TestingAgent] Step completed: ${step.stepType}`);
+
+          // Track reasoning FIRST (if available) - it logically comes before the response
+          if ("reasoning" in step && step.reasoning) {
+            console.log(`[TestingAgent] Adding reasoning block`);
+            await this.tracker.addReasoning(String(step.reasoning));
+            console.log(`[TestingAgent] Reasoning block added to database`);
+          }
+
+          // Track text content AFTER reasoning
+          if (step.text) {
+            await this.tracker.addText(step.text);
+          }
 
           if (step.toolCalls && step.toolCalls.length > 0) {
             for (const toolCall of step.toolCalls) {
@@ -219,10 +245,6 @@ Start by navigating to the target URL and exploring the application structure, t
                 toolResult.toolCallId,
               );
             }
-          }
-
-          if (step.text) {
-            await this.tracker.addText(step.text);
           }
         },
       });

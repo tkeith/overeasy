@@ -245,7 +245,7 @@ function ProjectLearnings() {
                       onClick={() =>
                         setSelectedExecutionId(learning.agentExecutionId)
                       }
-                      className="text-amber-500 transition-colors hover:text-amber-600"
+                      className="inline-flex items-center rounded-md p-1.5 text-amber-500 transition-colors hover:bg-amber-50 hover:text-amber-600"
                       title="View Agent Activity"
                     >
                       <Activity className="h-4 w-4" />

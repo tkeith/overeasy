@@ -5,6 +5,7 @@ import { join } from "path";
 import { firecrawlTools } from "~/server/ai/tools/firecrawl";
 import { db } from "~/server/db";
 import { ExecutionTracker } from "~/server/ai/utils/execution-tracker";
+import { LEARNING_EXTRACTOR_CONFIG } from "~/server/ai/constants";
 
 /**
  * Extract learnings from a URL using AI and Firecrawl
@@ -68,12 +69,18 @@ export async function extractLearningsFromUrl(
 
       console.log(`[Learning Extractor] Calling generateText now...`);
       const result = await generateText({
-        model: anthropic("claude-sonnet-4-20250514"),
+        model: anthropic(LEARNING_EXTRACTOR_CONFIG.model),
         tools,
-        maxSteps: 20, // Allow up to 20 tool calls
+        maxSteps: LEARNING_EXTRACTOR_CONFIG.maxSteps,
+        temperature: LEARNING_EXTRACTOR_CONFIG.temperature,
         providerOptions: {
           anthropic: {
-            thinking: { type: "enabled", budgetTokens: 15000 },
+            thinking: {
+              type: LEARNING_EXTRACTOR_CONFIG.thinking.enabled
+                ? "enabled"
+                : "disabled",
+              budgetTokens: LEARNING_EXTRACTOR_CONFIG.thinking.budgetTokens,
+            },
           } satisfies AnthropicProviderOptions,
         },
         headers: {

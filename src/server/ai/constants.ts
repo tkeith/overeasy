@@ -11,6 +11,10 @@ export const TESTING_AGENT_CONFIG = {
   model: AI_MODEL,
   temperature: AI_TEMPERATURE,
   maxSteps: 50,
+  thinking: {
+    enabled: true,
+    budgetTokens: 15000,
+  },
 } as const;
 
 export const LEARNING_EXTRACTOR_CONFIG = {
