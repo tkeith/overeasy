@@ -39,21 +39,57 @@ model Project {
 }
 
 model Learning {
+  id                String     @id @default(cuid())
+  projectId         String
+  url               String
+  summary           String?    @db.Text
+  content           String?    @db.Text // Content from Firecrawl
+  processedAt       DateTime?  // When AI processing completed
+  status            LearningStatus @default(PENDING)
+  agentExecutionId  String?    // Optional reference to agent execution
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  project           Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  agentExecution    AgentExecution? @relation(fields: [agentExecutionId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([status])
+  @@index([agentExecutionId])
+}
+
+model AgentExecution {
   id            String     @id @default(cuid())
-  projectId     String
-  url           String
-  summary       String?    @db.Text
-  content       String?    @db.Text // Content from Firecrawl
-  processedAt   DateTime?  // When AI processing completed
-  status        LearningStatus @default(PENDING)
+  agentName     String     // Name of the agent (e.g., "learning-extractor")
+  status        AgentExecutionStatus @default(RUNNING)
+  metadata      Json?      // Optional metadata about the execution
+  startedAt     DateTime   @default(now())
+  completedAt   DateTime?  // When execution finished (success or failure)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
   // Relations
-  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  blocks        AgentBlock[]
+  learnings     Learning[]  // Reverse relation from Learning
 
-  @@index([projectId])
   @@index([status])
+  @@index([agentName])
+}
+
+model AgentBlock {
+  id            String     @id @default(cuid())
+  executionId   String
+  blockType     AgentBlockType
+  content       Json       // The actual content (text, tool call, result, etc.)
+  sequence      Int        // Order of blocks within execution
+  createdAt     DateTime   @default(now())
+
+  // Relations
+  execution     AgentExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([executionId])
+  @@index([sequence])
 }
 
 enum LearningStatus {
@@ -61,4 +97,17 @@ enum LearningStatus {
   PROCESSING  // Currently being processed
   COMPLETED   // Successfully processed
   FAILED      // Processing failed
+}
+
+enum AgentExecutionStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum AgentBlockType {
+  TEXT
+  REASONING
+  TOOL_CALL
+  TOOL_RESULT
 }

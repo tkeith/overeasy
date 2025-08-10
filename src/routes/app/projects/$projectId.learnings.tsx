@@ -13,11 +13,13 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Activity,
 } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "~/stores/auth-store";
 import toast from "react-hot-toast";
+import { AgentExecutionModal } from "~/components/agent-execution-modal";
 
 export const Route = createFileRoute("/app/projects/$projectId/learnings")({
   component: ProjectLearnings,
@@ -28,9 +30,10 @@ function ProjectLearnings() {
     from: "/app/projects/$projectId/learnings",
   });
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addMode, setAddMode] = useState<"single" | "batch">("single");
   const [newUrl, setNewUrl] = useState("");
-  const [batchUrls, setBatchUrls] = useState("");
+  const [selectedExecutionId, setSelectedExecutionId] = useState<string | null>(
+    null,
+  );
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -73,7 +76,6 @@ function ProjectLearnings() {
       onSuccess: () => {
         void refetch();
         setNewUrl("");
-        setBatchUrls("");
       },
       onError: (error) => {
         console.error("Failed to add learning:", error);
@@ -96,50 +98,15 @@ function ProjectLearnings() {
   );
 
   const handleAddLearning = async () => {
-    if (!project || !token) return;
+    if (!project || !token || !newUrl) return;
 
-    if (addMode === "single" && newUrl) {
-      await createLearningMutation.mutateAsync({
-        token,
-        projectId,
-        url: newUrl,
-      });
-      toast.success("Learning resource added successfully!");
-      setShowAddModal(false);
-    } else if (addMode === "batch" && batchUrls) {
-      const urls = batchUrls
-        .split("\n")
-        .map((u) => u.trim())
-        .filter(Boolean);
-
-      // Add all URLs sequentially
-      let successCount = 0;
-      let failCount = 0;
-      for (const url of urls) {
-        try {
-          await createLearningMutation.mutateAsync({
-            token,
-            projectId,
-            url,
-          });
-          successCount++;
-        } catch (error) {
-          console.error(`Failed to add URL ${url}:`, error);
-          failCount++;
-        }
-      }
-      if (successCount > 0) {
-        toast.success(
-          `Successfully added ${successCount} learning resource${successCount > 1 ? "s" : ""}`,
-        );
-      }
-      if (failCount > 0) {
-        toast.error(
-          `Failed to add ${failCount} URL${failCount > 1 ? "s" : ""}`,
-        );
-      }
-      setShowAddModal(false);
-    }
+    await createLearningMutation.mutateAsync({
+      token,
+      projectId,
+      url: newUrl,
+    });
+    toast.success("Learning resource added successfully!");
+    setShowAddModal(false);
   };
 
   const handleDeleteLearning = (learningId: string) => {
@@ -272,13 +239,26 @@ function ProjectLearnings() {
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteLearning(learning.id)}
-                  className="ml-4 text-red-500 transition-colors hover:text-red-600"
-                  disabled={deleteLearningMutation.isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="ml-4 flex items-center space-x-2">
+                  {learning.agentExecutionId && (
+                    <button
+                      onClick={() =>
+                        setSelectedExecutionId(learning.agentExecutionId)
+                      }
+                      className="text-amber-500 transition-colors hover:text-amber-600"
+                      title="View Agent Activity"
+                    >
+                      <Activity className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteLearning(learning.id)}
+                    className="text-red-500 transition-colors hover:text-red-600"
+                    disabled={deleteLearningMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -299,58 +279,18 @@ function ProjectLearnings() {
               Add Learning Resource
             </h2>
 
-            {/* Mode Selector */}
-            <div className="mb-4 flex rounded-lg bg-gray-100 p-1">
-              <button
-                onClick={() => setAddMode("single")}
-                className={`flex-1 rounded-md px-3 py-1 text-sm font-medium transition-colors ${
-                  addMode === "single"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Single URL
-              </button>
-              <button
-                onClick={() => setAddMode("batch")}
-                className={`flex-1 rounded-md px-3 py-1 text-sm font-medium transition-colors ${
-                  addMode === "batch"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Batch Add
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                URL
+              </label>
+              <input
+                type="url"
+                value={newUrl}
+                onChange={(e) => setNewUrl(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                placeholder="https://example.com/security-guide"
+              />
             </div>
-
-            {/* Input Fields */}
-            {addMode === "single" ? (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  URL
-                </label>
-                <input
-                  type="url"
-                  value={newUrl}
-                  onChange={(e) => setNewUrl(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                  placeholder="https://example.com/security-guide"
-                />
-              </div>
-            ) : (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  URLs (one per line)
-                </label>
-                <textarea
-                  value={batchUrls}
-                  onChange={(e) => setBatchUrls(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                  placeholder="https://example.com/security-guide&#10;https://owasp.org/..."
-                  rows={5}
-                />
-              </div>
-            )}
 
             <div className="mt-6 flex space-x-3">
               <button
@@ -362,10 +302,7 @@ function ProjectLearnings() {
               </button>
               <button
                 onClick={() => void handleAddLearning()}
-                disabled={
-                  createLearningMutation.isPending ||
-                  (addMode === "single" ? !newUrl : !batchUrls)
-                }
+                disabled={createLearningMutation.isPending || !newUrl}
                 className="flex-1 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
               >
                 {createLearningMutation.isPending ? (
@@ -380,6 +317,15 @@ function ProjectLearnings() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Agent Execution Modal */}
+      {selectedExecutionId && (
+        <AgentExecutionModal
+          executionId={selectedExecutionId}
+          isOpen={!!selectedExecutionId}
+          onClose={() => setSelectedExecutionId(null)}
+        />
       )}
     </div>
   );

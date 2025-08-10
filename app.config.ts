@@ -29,9 +29,10 @@ export default createApp({
         config("allowedHosts", {
           // @ts-ignore
           server: {
-            allowedHosts: env.BASE_URL
-              ? [env.BASE_URL.split("://")[1]]
-              : undefined,
+            allowedHosts: [
+              ...(env.BASE_URL ? [env.BASE_URL.split("://")[1]] : []),
+              "337ff5268b72.ngrok.app",
+            ],
           },
         }),
         tsConfigPaths({
@@ -49,9 +50,10 @@ export default createApp({
         config("allowedHosts", {
           // @ts-ignore
           server: {
-            allowedHosts: env.BASE_URL
-              ? [env.BASE_URL.split("://")[1]]
-              : undefined,
+            allowedHosts: [
+              ...(env.BASE_URL ? [env.BASE_URL.split("://")[1]] : []),
+              "337ff5268b72.ngrok.app",
+            ],
           },
         }),
         tsConfigPaths({
