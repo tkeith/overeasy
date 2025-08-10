@@ -7,7 +7,18 @@ import { generateText } from "ai";
 // Generate AI response with tool calling and reasoning
 const { text, reasoning, steps } = await generateText({
   model: anthropic("claude-sonnet-4-20250514"),
-  tools: [] // add tools,
+  tools: {
+    weather: tool({
+      description: "Get the weather in a location",
+      inputSchema: z.object({
+        location: z.string().describe("The location to get the weather for"),
+      }),
+      execute: async ({ location }) => ({
+        location,
+        temperature: 72 + Math.floor(Math.random() * 21) - 10,
+      }),
+    }),
+  },
   maxSteps: 20, // Allow up to 20 tool calls
   providerOptions: {
     anthropic: {
