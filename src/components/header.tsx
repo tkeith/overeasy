@@ -4,7 +4,7 @@ import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
-import { AppBrand } from "~/components/app-brand";
+import { OvereasyLogo } from "~/components/overeasy-logo";
 
 export function Header() {
   const navigate = useNavigate();
@@ -28,13 +28,11 @@ export function Header() {
   };
 
   return (
-    <header className="border-b border-amber-100 bg-white/95 backdrop-blur-sm shadow-sm">
+    <header className="border-b border-amber-100 bg-white/95 shadow-sm backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <h1 className="text-2xl">
-              <AppBrand className="text-2xl" />
-            </h1>
+            <OvereasyLogo size="small" />
           </div>
 
           <div className="flex items-center gap-4">

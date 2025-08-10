@@ -8,3 +8,4 @@ export const testRunsRouter = createTRPCRouter({
   getMany: getTestRuns,
   getOne: getTestRun,
 });
+

@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore, useIsAuthenticated } from "~/stores/auth-store";
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { AppBrand } from "~/components/app-brand";
+import { OvereasyLogo } from "~/components/overeasy-logo";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -39,14 +39,14 @@ function LoginPage() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-yellow-50 px-4">
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-amber-100/30 bg-white p-8 shadow-xl">
           <div className="mb-8 text-center">
-            <div className="mb-4">
-              <AppBrand className="text-4xl" />
+            <div className="mb-6 flex justify-center">
+              <OvereasyLogo size="large" />
             </div>
-            <p className="text-gray-600">Sign in to access your account</p>
+            <p className="text-gray-600">Start your safety journey with Eggy</p>
           </div>
 
           {error && (
