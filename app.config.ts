@@ -40,7 +40,6 @@ export default createApp({
         }),
       ],
     },
-
     {
       type: "spa",
       name: "client",

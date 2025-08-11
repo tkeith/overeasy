@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Plus, ArrowRight, Folder } from "lucide-react";
+import { Plus, ArrowRight, Folder, ExternalLink } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "~/stores/auth-store";
@@ -139,9 +139,21 @@ function ProjectsOverview() {
                     <h3 className="text-lg font-semibold text-gray-900">
                       {project.name}
                     </h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-gray-500">
-                      {project.url}
-                    </p>
+                    <div className="mt-1 flex items-center space-x-2">
+                      <p className="line-clamp-1 text-sm text-gray-500">
+                        {project.url}
+                      </p>
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center text-amber-500 transition-colors hover:text-amber-600"
+                        title="Open in new tab"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
                     <p className="mt-2 text-xs text-gray-400">
                       {project._count?.learnings || 0} learnings
                     </p>

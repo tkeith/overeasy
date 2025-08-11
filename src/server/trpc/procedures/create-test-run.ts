@@ -70,6 +70,7 @@ export const createTestRun = baseProcedure
           projectId: input.projectId,
           userId: user.id,
           targetUrl: project.url,
+          context: project.context,
         });
 
         await agent.execute();

@@ -23,12 +23,12 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.1.1
         version: 5.1.1(react-hook-form@7.58.1(react@19.1.0))
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.17.2
+        version: 1.17.2
       '@openrouter/ai-sdk-provider':
         specifier: ^0.7.3
         version: 0.7.3(ai@4.3.19(react@19.1.0)(zod@3.25.67))(zod@3.25.67)
-      '@playwright/mcp':
-        specifier: ^0.0.33
-        version: 0.0.33
       '@prisma/client':
         specifier: ^6.8.2
         version: 6.8.2(prisma@6.7.0(typescript@5.8.3))(typescript@5.8.3)
@@ -92,9 +92,6 @@ importers:
       openai:
         specifier: ^4.79.0
         version: 4.104.0(ws@8.18.3)(zod@3.25.67)
-      playwright:
-        specifier: ^1.54.2
-        version: 1.54.2
       postcss:
         specifier: ^8.5.1
         version: 8.5.3
@@ -1078,10 +1075,6 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@modelcontextprotocol/sdk@1.11.0':
-    resolution: {integrity: sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ==}
-    engines: {node: '>=18'}
-
   '@modelcontextprotocol/sdk@1.17.2':
     resolution: {integrity: sha512-EFLRNXR/ixpXQWu6/3Cu30ndDFIFNaqUXcTqsGebujeMan9FzhAaFFswLRiFj61rgygDRr8WO1N+UijjgRxX9g==}
     engines: {node: '>=18'}
@@ -1238,11 +1231,6 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
-
-  '@playwright/mcp@0.0.33':
-    resolution: {integrity: sha512-/rKAyty60sCP4nsUi8z1d+nY76MPVtncqUc6Oyxh8qaN4neifwKB5KTjo68v/d61sKaOhNJIxQjXeVUvnYRF+Q==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   '@poppinss/colors@4.1.4':
     resolution: {integrity: sha512-FA+nTU8p6OcSH4tLDY5JilGYr1bVWHpNmcLr7xmMEdbWmKHa+3QZ+DqefrXKmdjO/brHTnQZo20lLSjaO7ydog==}
@@ -2314,10 +2302,6 @@ packages:
     resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
     engines: {node: '>=14'}
 
-  commander@13.1.0:
-    resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
-    engines: {node: '>=18'}
-
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
@@ -2670,10 +2654,6 @@ packages:
 
   dotenv@16.5.0:
     resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
-    engines: {node: '>=12'}
-
-  dotenv@17.2.1:
-    resolution: {integrity: sha512-kQhDYKZecqnM0fCnzI5eIv5L4cAe/iRI+HqMbO/hbRdTAeXDG+M9FjipUxNfbARuEg4iHIbhnhs78BCHNbSxEQ==}
     engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
@@ -3068,11 +3048,6 @@ packages:
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
-
-  fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -4309,26 +4284,6 @@ packages:
 
   pkg-types@2.1.0:
     resolution: {integrity: sha512-wmJwA+8ihJixSoHKxZJRBQG1oY8Yr9pGLzRmSsNms0iNWyHHAlZCa7mmKiFR10YPZuz/2k169JiS/inOjBCZ2A==}
-
-  playwright-core@1.54.2:
-    resolution: {integrity: sha512-n5r4HFbMmWsB4twG7tJLDN9gmBUeSPcsBZiWSE4DnYz9mJMAFqr2ID7+eGC9kpEnxExJ1epttwR59LEWCk8mtA==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright-core@1.55.0-alpha-2025-08-07:
-    resolution: {integrity: sha512-NUuC6R0/dLk1QKiYoJL8NUsQAC6Je0C2BpuIg5h4wcvBwJ5TFldslmik17Txg3TXBSqwgG76DAl4Q6UdHGn54Q==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.54.2:
-    resolution: {integrity: sha512-Hu/BMoA1NAdRUuulyvQC0pEqZ4vQbGfn8f7wPXcnqQmM+zct9UliKxsIkLNmz/ku7LElUNqmaiv1TG/aL5ACsw==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.55.0-alpha-2025-08-07:
-    resolution: {integrity: sha512-rH8kdQOZzhjxC6FOL9zSEDwPl88ZqQq9QEvRDONWhzKwRQ/jOXlEZRxm8QRCBdrLqBMTGHx/YOaP7MIV//rtIA==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -6275,21 +6230,6 @@ snapshots:
       - encoding
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.11.0':
-    dependencies:
-      content-type: 1.0.5
-      cors: 2.8.5
-      cross-spawn: 7.0.6
-      eventsource: 3.0.6
-      express: 5.1.0
-      express-rate-limit: 7.5.0(express@5.1.0)
-      pkce-challenge: 5.0.0
-      raw-body: 3.0.0
-      zod: 3.25.67
-      zod-to-json-schema: 3.24.5(zod@3.25.67)
-    transitivePeerDependencies:
-      - supports-color
-
   '@modelcontextprotocol/sdk@1.17.2':
     dependencies:
       ajv: 6.12.6
@@ -6486,23 +6426,6 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
-
-  '@playwright/mcp@0.0.33':
-    dependencies:
-      '@modelcontextprotocol/sdk': 1.17.2
-      commander: 13.1.0
-      debug: 4.4.1
-      dotenv: 17.2.1
-      mime: 4.0.7
-      playwright: 1.55.0-alpha-2025-08-07
-      playwright-core: 1.55.0-alpha-2025-08-07
-      ws: 8.18.3
-      zod: 3.25.67
-      zod-to-json-schema: 3.24.5(zod@3.25.67)
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
 
   '@poppinss/colors@4.1.4':
     dependencies:
@@ -7886,7 +7809,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 4.4.0
+      debug: 4.4.1
       http-errors: 2.0.0
       iconv-lite: 0.6.3
       on-finished: 2.4.1
@@ -8138,8 +8061,6 @@ snapshots:
       delayed-stream: 1.0.0
 
   commander@10.0.1: {}
-
-  commander@13.1.0: {}
 
   commander@2.20.3: {}
 
@@ -8448,8 +8369,6 @@ snapshots:
       type-fest: 4.40.1
 
   dotenv@16.5.0: {}
-
-  dotenv@17.2.1: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -8772,7 +8691,7 @@ snapshots:
       '@humanfs/node': 0.16.6
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.2
-      '@modelcontextprotocol/sdk': 1.11.0
+      '@modelcontextprotocol/sdk': 1.17.2
       '@types/estree': 1.0.7
       '@types/json-schema': 7.0.15
       ajv: 6.12.6
@@ -8886,7 +8805,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.0
+      debug: 4.4.1
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -8979,7 +8898,7 @@ snapshots:
 
   finalhandler@2.1.0:
     dependencies:
-      debug: 4.4.0
+      debug: 4.4.1
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -9060,9 +8979,6 @@ snapshots:
       minipass: 3.3.6
 
   fs.realpath@1.0.0: {}
-
-  fsevents@2.3.2:
-    optional: true
 
   fsevents@2.3.3:
     optional: true
@@ -10441,22 +10357,6 @@ snapshots:
       exsolve: 1.0.5
       pathe: 2.0.3
 
-  playwright-core@1.54.2: {}
-
-  playwright-core@1.55.0-alpha-2025-08-07: {}
-
-  playwright@1.54.2:
-    dependencies:
-      playwright-core: 1.54.2
-    optionalDependencies:
-      fsevents: 2.3.2
-
-  playwright@1.55.0-alpha-2025-08-07:
-    dependencies:
-      playwright-core: 1.55.0-alpha-2025-08-07
-    optionalDependencies:
-      fsevents: 2.3.2
-
   possible-typed-array-names@1.1.0: {}
 
   postcss-import@15.1.0(postcss@8.5.3):
@@ -10798,7 +10698,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.0
+      debug: 4.4.1
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -11787,7 +11687,8 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
 
-  ws@8.18.3: {}
+  ws@8.18.3:
+    optional: true
 
   xml2js@0.6.2:
     dependencies:

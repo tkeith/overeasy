@@ -17,6 +17,7 @@ interface TestingAgentOptions {
   projectId: string;
   userId: string;
   targetUrl: string;
+  context?: string | null;
 }
 
 interface VulnerabilityFound {
@@ -36,6 +37,7 @@ export class TestingAgent {
   private projectId: string;
   private userId: string;
   private targetUrl: string;
+  private context: string | null;
   private vmId: string | null = null;
 
   constructor(options: TestingAgentOptions) {
@@ -43,6 +45,7 @@ export class TestingAgent {
     this.projectId = options.projectId;
     this.userId = options.userId;
     this.targetUrl = options.targetUrl;
+    this.context = options.context || null;
     this.tracker = new ExecutionTracker();
   }
 
@@ -122,19 +125,20 @@ export class TestingAgent {
       console.log(`[TestingAgent] Creating Playwright MCP client...`);
       await this.tracker.addText("Initializing browser automation tools...");
 
-      // Using STDIO transport for Playwright MCP
+      // Use official Playwright MCP server via STDIO as intended
       const mcpConfig = {
         transport: {
           type: "stdio" as const,
           command: "npx",
-          args: ["-y", "@playwright/mcp"],
+          args: ["-y", "@playwright/mcp@latest"],
           env: {
             ...process.env,
-            // Ensure headless mode for server environment
-            PLAYWRIGHT_HEADLESS: "true",
+            HEADLESS: "true",
           },
         },
       };
+
+      console.log(`[TestingAgent] Starting Playwright MCP via STDIO`);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       playwrightClient = await experimental_createMCPClient(mcpConfig as any);
@@ -168,9 +172,13 @@ export class TestingAgent {
         .join("\n\n");
 
       // Prepare the user prompt
+      const contextSection = this.context
+        ? `\n## Additional Context\n${this.context}\n`
+        : "";
+
       const userPrompt = `
 Target Application URL: ${this.targetUrl}
-
+${contextSection}
 Please test this application for vulnerabilities based on the following security learnings:
 
 ${learningsContext}

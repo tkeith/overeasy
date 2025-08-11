@@ -20,6 +20,7 @@ function ProjectSettings() {
   });
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [context, setContext] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const trpc = useTRPC();
@@ -47,6 +48,7 @@ function ProjectSettings() {
     if (project) {
       setName(project.name);
       setUrl(project.url);
+      setContext(project.context || "");
     }
   }, [project]);
 
@@ -87,6 +89,7 @@ function ProjectSettings() {
       projectId,
       name: name || undefined,
       url: url || undefined,
+      context: context || null,
     });
   };
 
@@ -140,6 +143,22 @@ function ProjectSettings() {
                   onChange={(e) => setUrl(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   placeholder="https://example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Additional Context
+                </label>
+                <p className="mt-1 text-xs text-gray-500">
+                  Optional information like login credentials, API keys, or other details needed for testing
+                </p>
+                <textarea
+                  value={context}
+                  onChange={(e) => setContext(e.target.value)}
+                  rows={6}
+                  className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  placeholder="Example:\nUsername: testuser\nPassword: testpass123\n\nNotes:\n- The app requires specific headers...\n- Test data is available at..."
                 />
               </div>
             </div>

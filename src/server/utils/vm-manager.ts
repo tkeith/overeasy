@@ -68,9 +68,6 @@ async function initializeTestingVm(vmId: string): Promise<void> {
       "curl -fsSL https://deb.nodesource.com/setup_20.x | bash -",
       "apt-get install -y nodejs",
       "npm install -g npm@latest",
-      // Install Playwright dependencies
-      "npm install -g playwright",
-      "npx playwright install-deps chromium",
     ];
 
     for (const command of setupCommands) {
@@ -131,4 +128,3 @@ export async function isVmHealthy(vmId: string): Promise<boolean> {
     return false;
   }
 }
-

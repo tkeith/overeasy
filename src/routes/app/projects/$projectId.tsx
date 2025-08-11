@@ -5,7 +5,13 @@ import {
   useParams,
   useNavigate,
 } from "@tanstack/react-router";
-import { BookOpen, TestTube, Settings, ChevronLeft } from "lucide-react";
+import {
+  BookOpen,
+  TestTube,
+  Settings,
+  ChevronLeft,
+  ExternalLink,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
@@ -85,7 +91,18 @@ function ProjectLayout() {
               <h1 className="text-xl font-semibold text-gray-900">
                 {project.name}
               </h1>
-              <p className="text-sm text-gray-500">{project.url}</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-sm text-gray-500">{project.url}</p>
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-amber-500 transition-colors hover:text-amber-600"
+                  title="Open in new tab"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

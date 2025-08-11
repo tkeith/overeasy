@@ -29,6 +29,7 @@ model Project {
   id            String     @id @default(cuid())
   name          String
   url           String     // The app URL to be tested
+  context       String?    @db.Text // Optional context like login credentials or other details
   userId        String
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

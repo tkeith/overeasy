@@ -13,6 +13,7 @@ import {
   AlertTriangleIcon,
   RefreshCwIcon,
   Activity,
+  Trash2,
 } from "lucide-react";
 import { AgentExecutionModal } from "~/components/agent-execution-modal";
 import type { TestRunStatus, VulnerabilitySeverity } from "@prisma/client";
@@ -61,6 +62,22 @@ function TestRunsPage() {
     }),
   );
 
+  // Delete test run mutation
+  const deleteTestRunMutation = useMutation(
+    trpc.testRuns.delete.mutationOptions({
+      onSuccess: () => {
+        void refetchTestRuns();
+        if (selectedTestRunId) {
+          setSelectedTestRunId(null);
+        }
+      },
+      onError: (error) => {
+        console.error("Failed to delete test run:", error);
+        alert(`Failed to delete test run: ${error.message}`);
+      },
+    }),
+  );
+
   // Auto-refresh for running tests
   useEffect(() => {
     const hasRunningTests = testRuns?.some((tr) => tr.status === "RUNNING");
@@ -75,6 +92,12 @@ function TestRunsPage() {
   const handleStartTestRun = () => {
     if (!token) return;
     createTestRunMutation.mutate({ token, projectId });
+  };
+
+  const handleDeleteTestRun = (testRunId: string) => {
+    if (!token) return;
+    if (!confirm("Are you sure you want to delete this test run?")) return;
+    deleteTestRunMutation.mutate({ token, testRunId });
   };
 
   const getStatusIcon = (status: TestRunStatus) => {
@@ -260,6 +283,17 @@ function TestRunsPage() {
                           <Activity className="h-4 w-4" />
                         </button>
                       )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTestRun(testRun.id);
+                        }}
+                        className="inline-flex items-center rounded-md p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                        title="Delete Test Run"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                 </div>

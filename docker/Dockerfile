@@ -11,9 +11,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN npm install -g pnpm
 RUN pnpm set store-dir /app/node_modules/.pnpm-store
+
+# Install Playwright for browser automation
 ENV SHELL=/bin/bash
 RUN bash -c "pnpm setup && \
     source /root/.bashrc && \
-    pnpm install -g playwright@^1.54.2 && \
-    playwright install --with-deps"
+    npx playwright install --with-deps chromium"
 ENV SHELL=/bin/sh

@@ -10,10 +10,11 @@ export const updateProject = baseProcedure
       projectId: z.string(),
       name: z.string().min(1).max(255).optional(),
       url: z.string().url().optional(),
+      context: z.string().optional().nullable(),
     }),
   )
   .mutation(async ({ input }) => {
-    const { token, projectId, name, url } = input;
+    const { token, projectId, name, url, context } = input;
 
     // Verify the token and get user
     const user = await verifyToken(token);
@@ -39,6 +40,7 @@ export const updateProject = baseProcedure
       data: {
         ...(name !== undefined && { name }),
         ...(url !== undefined && { url }),
+        ...(context !== undefined && { context }),
       },
     });
 
